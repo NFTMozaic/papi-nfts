@@ -1,0 +1,14 @@
+{
+  "name": "papi-nfts",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:NFTMozaic/papi-nfts.git",
+  "author": "Max Andreev <maxick20@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "chopsticks": "npx @acala-network/chopsticks@latest --config=./.chopsticks/polkadot-asset-hub.yml"
+  },
+  "dependencies": {
+    "polkadot-api": "^1.14.1"
+  }
+}
