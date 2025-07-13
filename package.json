@@ -6,9 +6,13 @@
   "author": "Max Andreev <maxick20@gmail.com>",
   "license": "MIT",
   "scripts": {
-    "chopsticks": "npx @acala-network/chopsticks@latest --config=./.chopsticks/polkadot-asset-hub.yml"
+    "chopsticks": "npx @acala-network/chopsticks@latest --config=./.chopsticks/polkadot-asset-hub.yml",
+    "test": "vitest"
   },
   "dependencies": {
     "polkadot-api": "^1.14.1"
+  },
+  "devDependencies": {
+    "vitest": "^3.2.4"
   }
 }
