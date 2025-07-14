@@ -6,13 +6,19 @@ This repository contains code examples in the form of tests for using PolkadotAP
 
 1. Install the latest version of [PAPI](https://www.npmjs.com/package/polkadot-api)
 
-2. Run local test network using [Acala Chopsticks](https://github.com/AcalaNetwork/chopsticks):
+2. Generate descriptors
+
+```sh
+yarn types
+```
+
+3. Run local test network using [Acala Chopsticks](https://github.com/AcalaNetwork/chopsticks):
 
 ```sh
 yarn chopsticks
 ```
 
-3. Run tests
+4. Run tests
 
 ```sh
 yarn test
