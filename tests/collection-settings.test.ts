@@ -76,8 +76,6 @@ describe("Collection Settings", () => {
       }).signAndSubmit(alice);
 
       expect(transferTx.ok).toBe(expectedBehavior.itemsTransferrable);
-
-      console.log(`✓ ${name}: ${expectedBehavior.description}`);
     });
   });
 });
