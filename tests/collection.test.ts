@@ -15,7 +15,7 @@ describe("NFTs pallet Collections", () => {
         mint_settings: {
           default_item_settings: 0n,
           mint_type: { type: "Issuer", value: undefined },
-          price: 10n,
+          price: 1n * 10n ** 10n, // 1 DOT
           start_block: undefined,
           end_block: undefined,
         },
