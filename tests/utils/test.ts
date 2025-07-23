@@ -21,6 +21,7 @@ export const test = (
     process.on('unhandledRejection', cleanupErrorHandler);
 
     const provider = getWsProvider("ws://localhost:8000", (status) => {
+    // const provider = getWsProvider("wss://asset-hub-paseo.dotters.network", (status) => {
       switch (status.type) {
         case WsEvent.CONNECTED:
           console.log("Connected to the network");

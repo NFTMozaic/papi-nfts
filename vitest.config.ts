@@ -5,6 +5,6 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    testTimeout: 30_000
+    testTimeout: 120_000
   },
 }) 
