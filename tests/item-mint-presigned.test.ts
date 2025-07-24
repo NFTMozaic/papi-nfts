@@ -290,22 +290,4 @@ test("presigned minting", async ({ api, signers }) => {
     1
   );
   console.log(`Item 1 has ${item1Attributes.length} attributes`);
-
-  // Clean up - burn all items
-  const itemsToBurn = [1, 2, 3, 10, 11, 12, 21, 25]; // Successfully minted items
-  for (const itemId of itemsToBurn) {
-    const item = await api.query.Nfts.Item.getValue(collectionId, itemId);
-    if (item) {
-      // Find the signer that owns this item
-      const ownerSigner = [alice, bob, charlie, dave].find(
-        (s) => s.address === item.owner
-      );
-      if (ownerSigner) {
-        await api.tx.Nfts.burn({
-          collection: collectionId,
-          item: itemId,
-        }).signAndSubmit(ownerSigner);
-      }
-    }
-  }
 });

@@ -1,6 +1,6 @@
 # NFTs pallet code examples
 
-This repository contains code examples in the form of tests for using PolkadotAPI with pallet NFTs. The provided code examples are intended for documentation, <!--TODO provide a link--> with the goal of keeping them up to date.
+This repository contains code examples in the form of tests for using the Polkadot API with the NFTs pallet. The code examples provided aim to keep the documentation up to date.
 
 ## Steps
 

@@ -26,8 +26,6 @@ test(`Collection attributes can be set and unset`, async ({ api, signers }) => {
 
   const collectionId = nftsCreatedEvent.collection as number;
 
-  const metadata = "https://some-external-storage.com/metadata.json";
-
   const setAttributeTx = await api.tx.Nfts.set_attribute({
     collection: collectionId,
     key: Binary.fromText("test"),
