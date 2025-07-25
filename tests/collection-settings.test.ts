@@ -78,6 +78,88 @@ describe("Collection Settings", () => {
       expect(transferTx.ok).toBe(expectedBehavior.itemsTransferrable);
     });
   });
+
+  testCases.forEach(({ name, settings, expectedBehavior }) => {
+    test(`Collection settings ${name}, after minting`, async ({ api, signers }) => {
+      const { alice: owner, bob: admin } = signers;
+
+      // Create collection with specific settings
+      const createCollectionTx = await api.tx.Nfts.create({
+        admin: MultiAddress.Id(admin.address),
+        config: {
+          max_supply: 1000,
+          mint_settings: {
+            default_item_settings: 0n,
+            mint_type: { type: "Issuer", value: undefined },
+            price: 10n,
+            start_block: undefined,
+            end_block: undefined,
+          },
+          settings: 0n,
+        },
+      }).signAndSubmit(owner);
+
+      const nftsCreatedEvent = extractEvent(
+        createCollectionTx,
+        "Nfts",
+        "Created"
+      );
+
+      const collectionId = nftsCreatedEvent.collection as number;
+
+      // 0. set collection settings by collection owner!
+      const setCollectionSettingsTx = await api.tx.Nfts.lock_collection({
+        collection: collectionId,
+        lock_settings: settings
+      }).signAndSubmit(owner);
+      expect(setCollectionSettingsTx.ok).toBe(true);
+
+      // 1. Test max supply change capability
+      const setMaxSupplyTx = await api.tx.Nfts.set_collection_max_supply({
+        max_supply: 500,
+        collection: collectionId,
+      }).signAndSubmit(owner);
+
+      expect(setMaxSupplyTx.ok).toBe(expectedBehavior.canChangeMaxSupply);
+
+      // 2. Test metadata change capability
+      const changeMetadataTx = await api.tx.Nfts.set_collection_metadata({
+        collection: collectionId,
+        data: Binary.fromText("new metadata"),
+      }).signAndSubmit(admin);
+
+      expect(changeMetadataTx.ok).toBe(expectedBehavior.canChangeMetadata);
+
+      // 3. Test attributes change capability
+      const changeAttributeTx = await api.tx.Nfts.set_attribute({
+        collection: collectionId,
+        maybe_item: undefined,
+        namespace: { type: "CollectionOwner", value: undefined },
+        key: Binary.fromText("new_attr"),
+        value: Binary.fromText("new_value"),
+      }).signAndSubmit(admin);
+
+      expect(changeAttributeTx.ok).toBe(expectedBehavior.canChangeAttributes);
+
+      // 4. Test item transferrability by minting and attempting transfer
+      const mintTx = await api.tx.Nfts.mint({
+        collection: collectionId,
+        item: 1,
+        mint_to: MultiAddress.Id(owner.address),
+        witness_data: { owned_item: undefined, mint_price: 10n },
+      }).signAndSubmit(admin); // Admin mints
+
+      expect(mintTx.ok).toBe(true);
+
+      const transferTx = await api.tx.Nfts.transfer({
+        collection: collectionId,
+        item: 1,
+        dest: MultiAddress.Id(admin.address),
+      }).signAndSubmit(owner);
+
+      expect(transferTx.ok).toBe(expectedBehavior.itemsTransferrable);
+    });
+  });
 });
 
 const testCases = [
