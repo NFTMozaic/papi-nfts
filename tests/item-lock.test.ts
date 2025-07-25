@@ -1,24 +1,22 @@
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 import { extractEvent } from "./utils/event";
-import { Binary } from "polkadot-api";
 
-test("Item (NFT) metadata", async ({ api, signers }) => {
-  const { alice, bob } = signers;
-  const mintPrice = 1n * 10n ** 10n; // 1 DOT
+test("Item (NFT) lock", async ({ api, signers }) => {
+  const { alice, bob: admin, charlie: freezer } = signers;
 
   const createCollectionTx = await api.tx.Nfts.create({
-    admin: MultiAddress.Id(alice.address),
+    admin: MultiAddress.Id(admin.address),
     config: {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
         mint_type: { type: "Issuer", value: undefined },
-        price: mintPrice,
+        price: undefined,
         start_block: undefined,
         end_block: undefined,
       },
-      settings: 0n,
+      settings: 1n,
     },
   }).signAndSubmit(alice);
 
@@ -28,16 +26,82 @@ test("Item (NFT) metadata", async ({ api, signers }) => {
   // collection id can be extracted from the event
   const collectionId = nftsCreatedEvent.collection as number;
 
+  // Create item to alice
   const createItemTx = await api.tx.Nfts.mint({
     collection: collectionId,
     item: 1,
-    mint_to: MultiAddress.Id(bob.address),
-    witness_data: {
-      mint_price: mintPrice,
-    },
-  }).signAndSubmit(alice);
+    mint_to: MultiAddress.Id(alice.address),
+    witness_data: undefined,
+  }).signAndSubmit(admin);
 
   expect(createItemTx.ok).toBe(true);
 
-  //   TODO: continue tests for locking and unlocking items
+  // Set freezer
+  const teamTx = await api.tx.Nfts.set_team({
+    collection: collectionId,
+    admin: MultiAddress.Id(admin.address),
+    freezer: MultiAddress.Id(freezer.address),
+    issuer: MultiAddress.Id(admin.address)
+  }).signAndSubmit(alice);
+
+  expect(teamTx.ok).toBe(true);
+
+  // Default item mint_settings is 0n
+  let itemSettings = await api.query.Nfts.ItemConfigOf.getValue(collectionId, 1);
+  expect(itemSettings).toBe(0n);
+
+  // 1. Admin can lock metadata and attributes
+  const lockMetadataTx = await api.tx.Nfts.lock_item_properties({
+    collection: collectionId,
+    item: 1,
+    lock_metadata: true,
+    lock_attributes: true,
+  }).signAndSubmit(admin);
+
+  expect(lockMetadataTx.ok).toBe(true);
+
+  // Item mint_settings is 6n
+  itemSettings = await api.query.Nfts.ItemConfigOf.getValue(collectionId, 1);
+  expect(itemSettings).toBe(6n);
+
+  // 2. Admin cannot unlock metadata and/or attributes – they are permanently locked
+  const unlockMetadataTx = await api.tx.Nfts.lock_item_properties({
+    collection: collectionId,
+    item: 1,
+    lock_metadata: true,
+    lock_attributes: false,
+  }).signAndSubmit(admin);
+
+  // I believe this should fail, but it doesn't
+  // however, the item remains locked
+  expect(unlockMetadataTx.ok).toBe(true);
+
+  // Item mint_settings remains 6n
+  itemSettings = await api.query.Nfts.ItemConfigOf.getValue(collectionId, 1);
+  expect(itemSettings).toBe(6n);
+
+  // 3. Freezer can lock transfers
+  const lockTransfersTx = await api.tx.Nfts.lock_item_transfer({
+    collection: collectionId,
+    item: 1,
+  }).signAndSubmit(freezer);
+
+  expect(lockTransfersTx.ok).toBe(true);
+
+  // Item mint_settings is 7n (transfers are locked)
+  itemSettings = await api.query.Nfts.ItemConfigOf.getValue(collectionId, 1);
+  expect(itemSettings).toBe(7n);
+
+  // 4. Freezer can unlock transfers
+  const unlockTransfersTx = await api.tx.Nfts.unlock_item_transfer({
+    collection: collectionId,
+    item: 1,
+  }).signAndSubmit(freezer);
+
+  expect(unlockTransfersTx.ok).toBe(true);
+
+  // Item mint_settings is 6n (transfers unlocked)
+  itemSettings = await api.query.Nfts.ItemConfigOf.getValue(collectionId, 1);
+  expect(itemSettings).toBe(6n);
+
 });
