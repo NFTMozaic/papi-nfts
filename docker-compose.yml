@@ -3,13 +3,13 @@ services:
     build: .
     ports:
       - "8000:8000"
-    command: yarn chopsticks
+    command: pnpm chopsticks
     environment:
       - NODE_ENV=test
 
   tests:
     build: .
-    command: yarn test
+    command: pnpm test
     environment:
       - NODE_ENV=test
       - CHAIN_URL=ws://chopsticks:8000

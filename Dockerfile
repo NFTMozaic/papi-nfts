@@ -3,8 +3,8 @@ FROM node:22-alpine
 WORKDIR /app
 
 COPY .papi ./.papi
-COPY package.json yarn.lock ./
-RUN yarn install --frozen-lockfile
+COPY package.json pnpm-lock.yaml ./
+RUN pnpm install --frozen-lockfile
 
 RUN npm install -g @acala-network/chopsticks@1.2.1
 
@@ -13,4 +13,4 @@ COPY . .
 # Expose chopsticks port
 EXPOSE 8000
 
-CMD ["yarn", "test"]
+CMD ["pnpm", "test"]
