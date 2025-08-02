@@ -1,6 +1,5 @@
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
-import { extractEvent } from "./utils/event";
 import { Enum } from "polkadot-api";
 
 test("Item (NFT) burn", async ({ api, signers }) => {
@@ -22,11 +21,8 @@ test("Item (NFT) burn", async ({ api, signers }) => {
     },
   }).signAndSubmit(alice);
 
-  // nfts.Created event is emitted when the collection is created
-  const nftsCreatedEvent = extractEvent(createCollectionTx, "Nfts", "Created");
-
-  // collection id can be extracted from the event
-  const collectionId = nftsCreatedEvent.collection as number;
+  const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+  const collectionId = createdEvent.collection;
 
   const createItemTx = await api.tx.Nfts.mint({
     collection: collectionId,

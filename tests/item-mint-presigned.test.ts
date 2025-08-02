@@ -1,6 +1,5 @@
 import { MultiAddress, MultiSignature, dot } from "@polkadot-api/descriptors";
 import { test } from "./utils/test";
-import { extractEvent } from "./utils/event";
 import {
   Binary,
   Enum,
@@ -28,8 +27,8 @@ test("presigned minting", async ({ api, signers }) => {
     },
   }).signAndSubmit(alice);
 
-  const nftsCreatedEvent = extractEvent(createCollectionTx, "Nfts", "Created");
-  const collectionId = nftsCreatedEvent.collection as number;
+  const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+  const collectionId = createdEvent.collection;
 
   // SCENARIO 1: Whitelist NFT Drop
   // Alice creates presigned mint data for Bob (whitelisted user)

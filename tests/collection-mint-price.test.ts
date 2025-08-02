@@ -1,5 +1,4 @@
 import { Enum } from "polkadot-api";
-import { extractEvent } from "./utils/event";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 
@@ -23,9 +22,8 @@ test(`Mint Price can be set`, async ({ api, signers }) => {
     },
   }).signAndSubmit(owner);
 
-  const nftsCreatedEvent = extractEvent(createCollectionTx, "Nfts", "Created");
-
-  const collectionId = nftsCreatedEvent.collection as number;
+  const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+  const collectionId = createdEvent.collection;
 
   // 2. Non-issuer can mint by paying the price
   const mintNonIssuerTx = await api.tx.Nfts.mint({
@@ -36,7 +34,7 @@ test(`Mint Price can be set`, async ({ api, signers }) => {
   }).signAndSubmit(charlie);
 
   expect(mintNonIssuerTx.ok).toBe(true);
-  const transferEvent = extractEvent(mintNonIssuerTx, "Balances", "Transfer");
+  const [transferEvent] = api.event.Balances.Transfer.filter(mintNonIssuerTx.events);
 
   expect(transferEvent.from).toBe(charlie.address);
   expect(transferEvent.to).toBe(owner.address);

@@ -1,7 +1,6 @@
 import { describe } from "vitest";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
-import { extractEvent } from "./utils/event";
 import { COLLECTION_DEPOSIT } from "./utils/constants";
 import { Enum } from "polkadot-api";
 
@@ -25,15 +24,9 @@ describe("NFTs pallet Collections", () => {
     }).signAndSubmit(alice);
 
     // nfts.Created event is emitted when the collection is created
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    // collection id can be extracted from the event
-    const collectionId = nftsCreatedEvent.collection as number;
-
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
+  
     const collectionInfo = await api.query.Nfts.Collection.getValue(collectionId);
     expect(collectionInfo?.owner).toBe(alice.address);
     expect(collectionInfo?.owner_deposit).toBe(COLLECTION_DEPOSIT);

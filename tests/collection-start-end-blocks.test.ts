@@ -1,5 +1,4 @@
 import { Enum } from "polkadot-api";
-import { extractEvent } from "./utils/event";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 
@@ -24,13 +23,8 @@ describe("Collection Start and End Blocks", () => {
       },
     }).signAndSubmit(owner);
 
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    const collectionId = nftsCreatedEvent.collection as number;
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
 
     // 2. Non-issuer cannot mint because the current block is before the start block
     const mintNonIssuerTx = await api.tx.Nfts.mint({
@@ -66,13 +60,8 @@ describe("Collection Start and End Blocks", () => {
       },
     }).signAndSubmit(owner);
 
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    const collectionId = nftsCreatedEvent.collection as number;
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
 
     // 2. Non-issuer cannot mint because the current block is after the end block
     const mintNonIssuerTx = await api.tx.Nfts.mint({

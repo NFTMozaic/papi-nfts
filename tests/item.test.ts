@@ -1,7 +1,6 @@
 import { describe } from "vitest";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
-import { extractEvent } from "./utils/event";
 import { Binary, Enum } from "polkadot-api";
 
 describe("NFTs pallet Items", () => {
@@ -24,16 +23,9 @@ describe("NFTs pallet Items", () => {
       },
     }).signAndSubmit(alice);
 
-    // nfts.Created event is emitted when the collection is created
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    // collection id can be extracted from the event
-    const collectionId = nftsCreatedEvent.collection as number;
-
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
+  
     const createItemTx = await api.tx.Nfts.mint({
       collection: collectionId,
       item: 1,
@@ -43,14 +35,10 @@ describe("NFTs pallet Items", () => {
       },
     }).signAndSubmit(alice);
 
-    const nftsMintedEvent = extractEvent(
-      createItemTx,
-      "Nfts",
-      "Issued"
-    );
+    const [mintedEvent] = api.event.Nfts.Issued.filter(createItemTx.events);
 
-    expect(nftsMintedEvent.item).toBe(1);
-    expect(nftsMintedEvent.collection).toBe(collectionId);
+    expect(mintedEvent.item).toBe(1);
+    expect(mintedEvent.collection).toBe(collectionId);
   });
 
   test("burn", async ({ api, signers }) => {    
@@ -71,14 +59,9 @@ describe("NFTs pallet Items", () => {
       },
     }).signAndSubmit(alice);
 
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    const collectionId = nftsCreatedEvent.collection as number;
-
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
+  
     const createItemTx = await api.tx.Nfts.mint({
       collection: collectionId,
       item: 1,

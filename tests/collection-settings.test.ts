@@ -1,5 +1,4 @@
 import { Binary, Enum } from "polkadot-api";
-import { extractEvent } from "./utils/event";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 
@@ -24,14 +23,9 @@ describe("Collection Settings", () => {
         },
       }).signAndSubmit(alice);
 
-      const nftsCreatedEvent = extractEvent(
-        createCollectionTx,
-        "Nfts",
-        "Created"
-      );
-
-      const collectionId = nftsCreatedEvent.collection as number;
-
+      const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+      const collectionId = createdEvent.collection;
+  
       // 1. Test max supply change capability
       const setMaxSupplyTx = await api.tx.Nfts.set_collection_max_supply({
         max_supply: 500,
@@ -99,14 +93,9 @@ describe("Collection Settings", () => {
         },
       }).signAndSubmit(owner);
 
-      const nftsCreatedEvent = extractEvent(
-        createCollectionTx,
-        "Nfts",
-        "Created"
-      );
-
-      const collectionId = nftsCreatedEvent.collection as number;
-
+      const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+      const collectionId = createdEvent.collection;
+  
       // 0. set collection settings by collection owner!
       const setCollectionSettingsTx = await api.tx.Nfts.lock_collection({
         collection: collectionId,
