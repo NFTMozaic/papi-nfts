@@ -4,6 +4,7 @@ WORKDIR /app
 
 COPY .papi ./.papi
 COPY package.json pnpm-lock.yaml ./
+RUN npm install -g pnpm
 RUN pnpm install --frozen-lockfile
 
 RUN npm install -g @acala-network/chopsticks@1.2.1
