@@ -1,4 +1,4 @@
-import { Binary } from "polkadot-api";
+import { Binary, Enum } from "polkadot-api";
 import { extractEvent } from "./utils/event";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
@@ -13,7 +13,7 @@ test(`Collection metadata can be set and unset`, async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Public", value: undefined },
+        mint_type: Enum("Public"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,

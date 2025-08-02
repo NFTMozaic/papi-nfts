@@ -2,7 +2,7 @@ import { describe } from "vitest";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 import { extractEvent } from "./utils/event";
-import { Binary } from "polkadot-api";
+import { Binary, Enum } from "polkadot-api";
 
 describe("NFTs pallet Items", () => {
   test("mint", async ({ api, signers }) => {
@@ -15,7 +15,7 @@ describe("NFTs pallet Items", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: mintPrice,
           start_block: undefined,
           end_block: undefined,
@@ -62,7 +62,7 @@ describe("NFTs pallet Items", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: undefined,
           start_block: undefined,
           end_block: undefined,
@@ -96,7 +96,7 @@ describe("NFTs pallet Items", () => {
         collection: collectionId,
         key: Binary.fromText("test"),
         value: Binary.fromText("test"),
-        namespace: { type: "CollectionOwner", value: undefined },
+        namespace: Enum("CollectionOwner"),
         maybe_item: 1,
     }).signAndSubmit(alice);
 

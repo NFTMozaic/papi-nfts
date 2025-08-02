@@ -1,6 +1,7 @@
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 import { extractEvent } from "./utils/event";
+import { Enum } from "polkadot-api";
 
 test("Items (NFT) can be swapped", async ({ api, signers }) => {
   const { alice, bob } = signers;
@@ -11,7 +12,7 @@ test("Items (NFT) can be swapped", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -32,7 +33,7 @@ test("Items (NFT) can be swapped", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -133,7 +134,7 @@ test("Items (NFT) swap can be cancelled", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -154,7 +155,7 @@ test("Items (NFT) swap can be cancelled", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,

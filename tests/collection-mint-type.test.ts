@@ -1,3 +1,4 @@
+import { Enum } from "polkadot-api";
 import { extractEvent } from "./utils/event";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
@@ -13,7 +14,7 @@ describe("Collection Mint Type", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: undefined,
           start_block: undefined,
           end_block: undefined,
@@ -61,7 +62,7 @@ describe("Collection Mint Type", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Public", value: undefined },
+          mint_type: Enum("Public"),
           price: undefined,
           start_block: undefined,
           end_block: undefined,
@@ -109,7 +110,7 @@ describe("Collection Mint Type", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: undefined,
           start_block: undefined,
           end_block: undefined,
@@ -143,7 +144,7 @@ describe("Collection Mint Type", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "HolderOf", value: firstCollectionId },
+          mint_type: Enum("HolderOf", firstCollectionId),
           price: undefined,
           start_block: undefined,
           end_block: undefined,

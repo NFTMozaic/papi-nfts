@@ -1,7 +1,7 @@
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 import { extractEvent } from "./utils/event";
-import { Binary } from "polkadot-api";
+import { Binary, Enum } from "polkadot-api";
 
 test("Item (NFT) attributes approve", async ({ api, signers }) => {
   const { alice, bob, charlie, dave } = signers;
@@ -12,7 +12,7 @@ test("Item (NFT) attributes approve", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -36,7 +36,6 @@ test("Item (NFT) attributes approve", async ({ api, signers }) => {
 
   expect(createItemTx.ok).toBe(true);
 
-
   const approveAttributeTxCharlie = await api.tx.Nfts.approve_item_attributes({
     collection: collectionId,
     delegate: MultiAddress.Id(charlie.address),
@@ -56,7 +55,10 @@ test("Item (NFT) attributes approve", async ({ api, signers }) => {
   expect(approveAttributeTxDave.ok).toBe(true);
 
   /// query approvals
-  let approvals = await api.query.Nfts.ItemAttributesApprovalsOf.getValue(collectionId, 1);
+  let approvals = await api.query.Nfts.ItemAttributesApprovalsOf.getValue(
+    collectionId,
+    1
+  );
   expect(approvals.length).toBe(2);
   expect(approvals).toContain(charlie.address);
   expect(approvals).toContain(dave.address);
@@ -65,7 +67,7 @@ test("Item (NFT) attributes approve", async ({ api, signers }) => {
   const setAttributeTxDave = await api.tx.Nfts.set_attribute({
     collection: collectionId,
     maybe_item: 1,
-    namespace: {type: "Account", value: dave.address},
+    namespace: Enum("Account", dave.address),
     key: Binary.fromText("Who"),
     value: Binary.fromText("Dave"),
   }).signAndSubmit(dave);
@@ -82,13 +84,16 @@ test("Item (NFT) attributes approve", async ({ api, signers }) => {
 
   expect(removeApprovalTx.ok).toBe(true);
 
-  approvals = await api.query.Nfts.ItemAttributesApprovalsOf.getValue(collectionId, 1);
+  approvals = await api.query.Nfts.ItemAttributesApprovalsOf.getValue(
+    collectionId,
+    1
+  );
   expect(approvals.length).toBe(1);
   expect(approvals).toContain(charlie.address);
 
   // The attribute set by Dave is removed
   // TODO: chopsticks bug, the number of attributes will be huge
-  
+
   // const attributes = await api.query.Nfts.Attribute.getEntries(collectionId, 1);
   // expect(attributes.length).toBe(0);
   // expect(attributes).not.toContain(dave.address);

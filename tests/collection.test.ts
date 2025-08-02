@@ -3,6 +3,7 @@ import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 import { extractEvent } from "./utils/event";
 import { COLLECTION_DEPOSIT } from "./utils/constants";
+import { Enum } from "polkadot-api";
 
 describe("NFTs pallet Collections", () => {
   test("create", async ({ api, signers }) => {
@@ -14,7 +15,7 @@ describe("NFTs pallet Collections", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: 1n * 10n ** 10n, // 1 DOT
           start_block: undefined,
           end_block: undefined,

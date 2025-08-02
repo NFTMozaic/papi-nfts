@@ -1,6 +1,6 @@
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
-import { Binary } from "polkadot-api";
+import { Binary, Enum } from "polkadot-api";
 
 test("Item (NFT) metadata", async ({ api, signers }) => {
   const { alice } = signers;
@@ -18,7 +18,7 @@ test("Item (NFT) metadata", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -38,7 +38,7 @@ test("Item (NFT) metadata", async ({ api, signers }) => {
     collection: nextCollectionId,
     key: Binary.fromText("https://example.com"),
     value: Binary.fromText("https://example.com"),
-    namespace: { type: "CollectionOwner", value: undefined },
+    namespace: Enum("CollectionOwner"),
     maybe_item: undefined,
   }).decodedCall;
 

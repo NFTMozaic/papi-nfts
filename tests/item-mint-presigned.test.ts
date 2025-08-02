@@ -3,6 +3,7 @@ import { test } from "./utils/test";
 import { extractEvent } from "./utils/event";
 import {
   Binary,
+  Enum,
   FixedSizeArray,
   FixedSizeBinary,
   getTypedCodecs,
@@ -18,7 +19,7 @@ test("presigned minting", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,

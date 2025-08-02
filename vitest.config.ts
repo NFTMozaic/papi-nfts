@@ -5,6 +5,17 @@ export default defineConfig({
     environment: 'node',
     globals: true,
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
-    testTimeout: 120_000
+    testTimeout: 120_000,
+    // Run tests sequentially to avoid state conflicts
+    pool: 'forks',
+    poolOptions: {
+      forks: {
+        singleFork: true,
+      },
+    },
+    // Ensure tests don't run in parallel
+    maxConcurrency: 1,
+    // Add isolation between tests
+    isolate: true,
   },
 }) 

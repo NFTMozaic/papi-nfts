@@ -1,4 +1,4 @@
-import { Binary } from "polkadot-api";
+import { Binary, Enum } from "polkadot-api";
 import { extractEvent } from "./utils/event";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
@@ -13,7 +13,7 @@ test(`Collection attributes can be set and unset`, async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Public", value: undefined },
+        mint_type: Enum("Public"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -30,7 +30,7 @@ test(`Collection attributes can be set and unset`, async ({ api, signers }) => {
     collection: collectionId,
     key: Binary.fromText("test"),
     value: Binary.fromText("test value"),
-    namespace: { type: "CollectionOwner", value: undefined },
+    namespace: Enum("CollectionOwner"),
     maybe_item: undefined,
   }).signAndSubmit(collectionAdmin);
 
@@ -39,7 +39,7 @@ test(`Collection attributes can be set and unset`, async ({ api, signers }) => {
   let collectionAttribute = await api.query.Nfts.Attribute.getValue(
     collectionId,
     undefined,
-    { type: "CollectionOwner", value: undefined },
+    Enum("CollectionOwner"),
     Binary.fromText("test"),
   );
 
@@ -49,7 +49,7 @@ test(`Collection attributes can be set and unset`, async ({ api, signers }) => {
   const unsetAttributeTx = await api.tx.Nfts.clear_attribute({
     collection: collectionId,
     key: Binary.fromText("test"),
-    namespace: { type: "CollectionOwner", value: undefined },
+    namespace: Enum("CollectionOwner"),
     maybe_item: undefined,
   }).signAndSubmit(collectionAdmin);
 
@@ -58,7 +58,7 @@ test(`Collection attributes can be set and unset`, async ({ api, signers }) => {
   collectionAttribute = await api.query.Nfts.Attribute.getValue(
     collectionId,
     undefined,
-    { type: "CollectionOwner", value: undefined },
+    Enum("CollectionOwner"),
     Binary.fromText("test"),
   );
 

@@ -1,3 +1,4 @@
+import { Enum } from "polkadot-api";
 import { extractEvent } from "./utils/event";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
@@ -13,7 +14,7 @@ test(`Mint Price can be set`, async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Public", value: undefined },
+        mint_type: Enum("Public"),
         price: MINT_PRICE,
         start_block: undefined,
         end_block: undefined,

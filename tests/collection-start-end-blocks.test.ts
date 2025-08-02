@@ -1,3 +1,4 @@
+import { Enum } from "polkadot-api";
 import { extractEvent } from "./utils/event";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
@@ -14,7 +15,7 @@ describe("Collection Start and End Blocks", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Public", value: undefined },
+          mint_type: Enum("Public"),
           price: undefined,
           start_block: currentBlock + 10,
           end_block: currentBlock + 100,
@@ -56,7 +57,7 @@ describe("Collection Start and End Blocks", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Public", value: undefined },
+          mint_type: Enum("Public"),
           price: undefined,
           start_block: currentBlock - 100,
           end_block: currentBlock - 1,
