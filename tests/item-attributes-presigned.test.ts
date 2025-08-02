@@ -1,7 +1,6 @@
 import { test } from "./utils/test";
 import { dot, MultiAddress, MultiSignature } from "@polkadot-api/descriptors";
-import { extractEvent } from "./utils/event";
-import { Binary, FixedSizeArray, FixedSizeBinary, getTypedCodecs } from "polkadot-api";
+import { Binary, Enum, FixedSizeArray, FixedSizeBinary, getTypedCodecs } from "polkadot-api";
 
 test("Item (NFT) attributes presigned", async ({ api, signers }) => {
   const { alice, bob } = signers;
@@ -14,7 +13,7 @@ test("Item (NFT) attributes presigned", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -23,11 +22,8 @@ test("Item (NFT) attributes presigned", async ({ api, signers }) => {
     },
   }).signAndSubmit(alice);
 
-  // nfts.Created event is emitted when the collection is created
-  const nftsCreatedEvent = extractEvent(createCollectionTx, "Nfts", "Created");
-
-  // collection id can be extracted from the event
-  const collectionId = nftsCreatedEvent.collection as number;
+  const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+  const collectionId = createdEvent.collection;
 
   const createItemTx = await api.tx.Nfts.mint({
     collection: collectionId,
@@ -43,7 +39,7 @@ test("Item (NFT) attributes presigned", async ({ api, signers }) => {
     collection: collectionId,
     item: 1,
     deadline: 10_000_000,
-    namespace: {type: "CollectionOwner", value: undefined},
+    namespace: Enum("CollectionOwner"),
     attributes: [
       [Binary.fromText("Experience"), Binary.fromText("300")],
       [Binary.fromText("Power"), Binary.fromText("200")],

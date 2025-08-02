@@ -1,5 +1,4 @@
-import { Binary } from "polkadot-api";
-import { extractEvent } from "./utils/event";
+import { Binary, Enum } from "polkadot-api";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 
@@ -13,7 +12,7 @@ test(`Collection can be destroyed`, async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Public", value: undefined },
+        mint_type: Enum("Public"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -22,15 +21,14 @@ test(`Collection can be destroyed`, async ({ api, signers }) => {
     },
   }).signAndSubmit(owner);
 
-  const nftsCreatedEvent = extractEvent(createCollectionTx, "Nfts", "Created");
-
-  const collectionId = nftsCreatedEvent.collection as number;
+  const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+  const collectionId = createdEvent.collection;
 
   const setattr = await api.tx.Nfts.set_attribute({
     collection: collectionId,
     key: Binary.fromText("test"),
     value: Binary.fromText("test value"),
-    namespace: { type: "CollectionOwner", value: undefined },
+    namespace: Enum("CollectionOwner"),
     maybe_item: undefined,
   }).signAndSubmit(owner);
 

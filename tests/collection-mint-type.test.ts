@@ -1,4 +1,4 @@
-import { extractEvent } from "./utils/event";
+import { Enum } from "polkadot-api";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 
@@ -13,7 +13,7 @@ describe("Collection Mint Type", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: undefined,
           start_block: undefined,
           end_block: undefined,
@@ -22,14 +22,9 @@ describe("Collection Mint Type", () => {
       },
     }).signAndSubmit(owner);
 
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    const collectionId = nftsCreatedEvent.collection as number;
-
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
+  
     // 1. Owner can mint
     const mintTx = await api.tx.Nfts.mint({
       collection: collectionId,
@@ -61,7 +56,7 @@ describe("Collection Mint Type", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Public", value: undefined },
+          mint_type: Enum("Public"),
           price: undefined,
           start_block: undefined,
           end_block: undefined,
@@ -70,14 +65,9 @@ describe("Collection Mint Type", () => {
       },
     }).signAndSubmit(owner);
 
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    const collectionId = nftsCreatedEvent.collection as number;
-
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
+  
     // 1. Issuer can mint
     const mintTx = await api.tx.Nfts.mint({
       collection: collectionId,
@@ -109,7 +99,7 @@ describe("Collection Mint Type", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: undefined,
           start_block: undefined,
           end_block: undefined,
@@ -118,14 +108,9 @@ describe("Collection Mint Type", () => {
       },
     }).signAndSubmit(alice);
 
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    const firstCollectionId = nftsCreatedEvent.collection as number;
-
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const firstCollectionId = createdEvent.collection;
+  
     // 1. Owner mints a token to charlie
     const mintTx = await api.tx.Nfts.mint({
       collection: firstCollectionId,
@@ -143,7 +128,7 @@ describe("Collection Mint Type", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "HolderOf", value: firstCollectionId },
+          mint_type: Enum("HolderOf", firstCollectionId),
           price: undefined,
           start_block: undefined,
           end_block: undefined,
@@ -152,11 +137,8 @@ describe("Collection Mint Type", () => {
       },
     }).signAndSubmit(alice);
 
-    const secondCollectionId = extractEvent(
-      createHolderOfCollectionTx,
-      "Nfts",
-      "Created"
-    ).collection as number;
+    const [secondCreatedEvent] = api.event.Nfts.Created.filter(createHolderOfCollectionTx.events);
+    const secondCollectionId = secondCreatedEvent.collection;
 
     // 1. Charlie can mint because she is a holder of the first collection NFT
     const charlieMintTx = await api.tx.Nfts.mint({

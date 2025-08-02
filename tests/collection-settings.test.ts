@@ -1,5 +1,4 @@
-import { Binary } from "polkadot-api";
-import { extractEvent } from "./utils/event";
+import { Binary, Enum } from "polkadot-api";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 
@@ -15,7 +14,7 @@ describe("Collection Settings", () => {
           max_supply: 1000,
           mint_settings: {
             default_item_settings: 0n,
-            mint_type: { type: "Issuer", value: undefined },
+            mint_type: Enum("Issuer"),
             price: 10n,
             start_block: undefined,
             end_block: undefined,
@@ -24,14 +23,9 @@ describe("Collection Settings", () => {
         },
       }).signAndSubmit(alice);
 
-      const nftsCreatedEvent = extractEvent(
-        createCollectionTx,
-        "Nfts",
-        "Created"
-      );
-
-      const collectionId = nftsCreatedEvent.collection as number;
-
+      const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+      const collectionId = createdEvent.collection;
+  
       // 1. Test max supply change capability
       const setMaxSupplyTx = await api.tx.Nfts.set_collection_max_supply({
         max_supply: 500,
@@ -52,7 +46,7 @@ describe("Collection Settings", () => {
       const changeAttributeTx = await api.tx.Nfts.set_attribute({
         collection: collectionId,
         maybe_item: undefined,
-        namespace: { type: "CollectionOwner", value: undefined },
+        namespace: Enum("CollectionOwner"),
         key: Binary.fromText("new_attr"),
         value: Binary.fromText("new_value"),
       }).signAndSubmit(alice);
@@ -90,7 +84,7 @@ describe("Collection Settings", () => {
           max_supply: 1000,
           mint_settings: {
             default_item_settings: 0n,
-            mint_type: { type: "Issuer", value: undefined },
+            mint_type: Enum("Issuer"),
             price: 10n,
             start_block: undefined,
             end_block: undefined,
@@ -99,14 +93,9 @@ describe("Collection Settings", () => {
         },
       }).signAndSubmit(owner);
 
-      const nftsCreatedEvent = extractEvent(
-        createCollectionTx,
-        "Nfts",
-        "Created"
-      );
-
-      const collectionId = nftsCreatedEvent.collection as number;
-
+      const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+      const collectionId = createdEvent.collection;
+  
       // 0. set collection settings by collection owner!
       const setCollectionSettingsTx = await api.tx.Nfts.lock_collection({
         collection: collectionId,
@@ -134,7 +123,7 @@ describe("Collection Settings", () => {
       const changeAttributeTx = await api.tx.Nfts.set_attribute({
         collection: collectionId,
         maybe_item: undefined,
-        namespace: { type: "CollectionOwner", value: undefined },
+        namespace: Enum("CollectionOwner"),
         key: Binary.fromText("new_attr"),
         value: Binary.fromText("new_value"),
       }).signAndSubmit(admin);

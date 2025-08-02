@@ -1,0 +1,23 @@
+services:
+  chopsticks:
+    build: .
+    ports:
+      - "8000:8000"
+    command: pnpm chopsticks
+    environment:
+      - NODE_ENV=test
+
+  tests:
+    build: .
+    command: pnpm test
+    environment:
+      - NODE_ENV=test
+      - CHAIN_URL=ws://chopsticks:8000
+    depends_on:
+      - chopsticks
+    networks:
+      - default
+
+networks:
+  default:
+    driver: bridge

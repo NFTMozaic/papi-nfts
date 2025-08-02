@@ -1,4 +1,4 @@
-import { extractEvent } from "./utils/event";
+import { Enum } from "polkadot-api";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 
@@ -14,7 +14,7 @@ describe("Collection Start and End Blocks", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Public", value: undefined },
+          mint_type: Enum("Public"),
           price: undefined,
           start_block: currentBlock + 10,
           end_block: currentBlock + 100,
@@ -23,13 +23,8 @@ describe("Collection Start and End Blocks", () => {
       },
     }).signAndSubmit(owner);
 
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    const collectionId = nftsCreatedEvent.collection as number;
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
 
     // 2. Non-issuer cannot mint because the current block is before the start block
     const mintNonIssuerTx = await api.tx.Nfts.mint({
@@ -56,7 +51,7 @@ describe("Collection Start and End Blocks", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Public", value: undefined },
+          mint_type: Enum("Public"),
           price: undefined,
           start_block: currentBlock - 100,
           end_block: currentBlock - 1,
@@ -65,13 +60,8 @@ describe("Collection Start and End Blocks", () => {
       },
     }).signAndSubmit(owner);
 
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    const collectionId = nftsCreatedEvent.collection as number;
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
 
     // 2. Non-issuer cannot mint because the current block is after the end block
     const mintNonIssuerTx = await api.tx.Nfts.mint({

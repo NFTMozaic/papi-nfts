@@ -1,5 +1,4 @@
-import { Binary } from "polkadot-api";
-import { extractEvent } from "./utils/event";
+import { Binary, Enum } from "polkadot-api";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
 
@@ -13,7 +12,7 @@ test(`Collection metadata can be set and unset`, async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Public", value: undefined },
+        mint_type: Enum("Public"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -22,9 +21,8 @@ test(`Collection metadata can be set and unset`, async ({ api, signers }) => {
     },
   }).signAndSubmit(owner);
 
-  const nftsCreatedEvent = extractEvent(createCollectionTx, "Nfts", "Created");
-
-  const collectionId = nftsCreatedEvent.collection as number;
+  const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+  const collectionId = createdEvent.collection;
 
   const metadata = "https://some-external-storage.com/metadata.json";
 

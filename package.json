@@ -8,11 +8,13 @@
   "scripts": {
     "chopsticks": "npx @acala-network/chopsticks@latest --config=./.chopsticks/polkadot-asset-hub.yml",
     "test": "vitest",
-    "types": "npx papi add dot -n polkadot_asset_hub"
+    "types": "npx papi add dot -n polkadot_asset_hub",
+    "postinstall": "npx papi"
   },
   "dependencies": {
     "@polkadot-api/descriptors": "file:.papi/descriptors",
     "@polkadot-labs/hdkd": "^0.0.19",
+    "@polkadot-labs/hdkd-helpers": "^0.0.20",
     "polkadot-api": "^1.14.1"
   },
   "devDependencies": {

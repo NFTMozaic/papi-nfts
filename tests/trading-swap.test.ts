@@ -1,6 +1,6 @@
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
-import { extractEvent } from "./utils/event";
+import { Enum } from "polkadot-api";
 
 test("Items (NFT) can be swapped", async ({ api, signers }) => {
   const { alice, bob } = signers;
@@ -11,7 +11,7 @@ test("Items (NFT) can be swapped", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -20,19 +20,16 @@ test("Items (NFT) can be swapped", async ({ api, signers }) => {
     },
   }).signAndSubmit(alice);
 
-  // nfts.Created event is emitted when the collection is created
-  const nftsCreatedEvent = extractEvent(createCollectionTx, "Nfts", "Created");
-
-  // collection id can be extracted from the event
-  const collectionIdBob = nftsCreatedEvent.collection as number;
-
+  const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+  const collectionIdBob = createdEvent.collection;
+  
   const createCollectionTx2 = await api.tx.Nfts.create({
     admin: MultiAddress.Id(alice.address),
     config: {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -41,16 +38,9 @@ test("Items (NFT) can be swapped", async ({ api, signers }) => {
     },
   }).signAndSubmit(alice);
 
-  // nfts.Created event is emitted when the collection is created
-  const nftsCreatedEvent2 = extractEvent(
-    createCollectionTx2,
-    "Nfts",
-    "Created"
-  );
-
-  // collection id can be extracted from the event
-  const collectionIdAlice = nftsCreatedEvent2.collection as number;
-
+  const [createdEvent2] = api.event.Nfts.Created.filter(createCollectionTx2.events);
+  const collectionIdAlice = createdEvent2.collection;
+  
   const createItemTx1 = await api.tx.Nfts.mint({
     collection: collectionIdBob,
     item: 1,
@@ -133,7 +123,7 @@ test("Items (NFT) swap can be cancelled", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -142,19 +132,16 @@ test("Items (NFT) swap can be cancelled", async ({ api, signers }) => {
     },
   }).signAndSubmit(alice);
 
-  // nfts.Created event is emitted when the collection is created
-  const nftsCreatedEvent = extractEvent(createCollectionTx, "Nfts", "Created");
-
-  // collection id can be extracted from the event
-  const collectionIdBob = nftsCreatedEvent.collection as number;
-
+  const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+  const collectionIdBob = createdEvent.collection;
+  
   const createCollectionTx2 = await api.tx.Nfts.create({
     admin: MultiAddress.Id(alice.address),
     config: {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: undefined,
         start_block: undefined,
         end_block: undefined,
@@ -163,16 +150,9 @@ test("Items (NFT) swap can be cancelled", async ({ api, signers }) => {
     },
   }).signAndSubmit(alice);
 
-  // nfts.Created event is emitted when the collection is created
-  const nftsCreatedEvent2 = extractEvent(
-    createCollectionTx2,
-    "Nfts",
-    "Created"
-  );
-
-  // collection id can be extracted from the event
-  const collectionIdAlice = nftsCreatedEvent2.collection as number;
-
+  const [createdEvent2] = api.event.Nfts.Created.filter(createCollectionTx2.events);
+  const collectionIdAlice = createdEvent2.collection;
+  
   const createItemTx1 = await api.tx.Nfts.mint({
     collection: collectionIdBob,
     item: 1,

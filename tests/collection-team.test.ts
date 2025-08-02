@@ -1,8 +1,7 @@
 import { describe } from "vitest";
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
-import { extractEvent } from "./utils/event";
-import { COLLECTION_DEPOSIT } from "./utils/constants";
+import { Enum } from "polkadot-api";
 
 describe("Collection Team", () => {
   test("Owner and admin are set during creation", async ({ api, signers }) => {
@@ -14,7 +13,7 @@ describe("Collection Team", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: 10n,
           start_block: undefined,
           end_block: undefined,
@@ -23,15 +22,8 @@ describe("Collection Team", () => {
       },
     }).signAndSubmit(alice);
 
-    // nfts.Created event is emitted when the collection is created
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    // collection id can be extracted from the event
-    const collectionId = nftsCreatedEvent.collection as number;
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
 
     const bobRole = await api.query.Nfts.CollectionRoleOf.getValue(
       collectionId,
@@ -49,7 +41,7 @@ describe("Collection Team", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: 10n,
           start_block: undefined,
           end_block: undefined,
@@ -58,15 +50,8 @@ describe("Collection Team", () => {
       },
     }).signAndSubmit(alice);
 
-    // nfts.Created event is emitted when the collection is created
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    // collection id can be extracted from the event
-    const collectionId = nftsCreatedEvent.collection as number;
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
 
     const setTeamTx = await api.tx.Nfts.set_team({
       collection: collectionId,
@@ -109,7 +94,7 @@ describe("Collection Team", () => {
         max_supply: 1000,
         mint_settings: {
           default_item_settings: 0n,
-          mint_type: { type: "Issuer", value: undefined },
+          mint_type: Enum("Issuer"),
           price: 10n,
           start_block: undefined,
           end_block: undefined,
@@ -118,16 +103,9 @@ describe("Collection Team", () => {
       },
     }).signAndSubmit(alice);
 
-    // nfts.Created event is emitted when the collection is created
-    const nftsCreatedEvent = extractEvent(
-      createCollectionTx,
-      "Nfts",
-      "Created"
-    );
-
-    // collection id can be extracted from the event
-    const collectionId = nftsCreatedEvent.collection as number;
-
+    const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+    const collectionId = createdEvent.collection;
+  
     const receiveTx = await api.tx.Nfts.set_accept_ownership({
       maybe_collection: collectionId,
     }).signAndSubmit(charlie);

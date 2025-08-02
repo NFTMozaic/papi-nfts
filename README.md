@@ -9,17 +9,17 @@ This repository contains code examples in the form of tests for using the Polkad
 2. Generate descriptors
 
 ```sh
-yarn types
+pnpm types
 ```
 
 3. Run local test network using [Acala Chopsticks](https://github.com/AcalaNetwork/chopsticks):
 
 ```sh
-yarn chopsticks
+pnpm chopsticks
 ```
 
 4. Run tests
 
 ```sh
-yarn test
+pnpm test
 ```

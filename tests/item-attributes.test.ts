@@ -1,7 +1,6 @@
 import { test } from "./utils/test";
 import { MultiAddress } from "@polkadot-api/descriptors";
-import { extractEvent } from "./utils/event";
-import { Binary } from "polkadot-api";
+import { Binary, Enum } from "polkadot-api";
 
 test("Item (NFT) attributes", async ({ api, signers }) => {
   const { alice, bob } = signers;
@@ -13,7 +12,7 @@ test("Item (NFT) attributes", async ({ api, signers }) => {
       max_supply: 1000,
       mint_settings: {
         default_item_settings: 0n,
-        mint_type: { type: "Issuer", value: undefined },
+        mint_type: Enum("Issuer"),
         price: mintPrice,
         start_block: undefined,
         end_block: undefined,
@@ -22,11 +21,8 @@ test("Item (NFT) attributes", async ({ api, signers }) => {
     },
   }).signAndSubmit(alice);
 
-  // nfts.Created event is emitted when the collection is created
-  const nftsCreatedEvent = extractEvent(createCollectionTx, "Nfts", "Created");
-
-  // collection id can be extracted from the event
-  const collectionId = nftsCreatedEvent.collection as number;
+  const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
+  const collectionId = createdEvent.collection;
 
   const createItemTx = await api.tx.Nfts.mint({
     collection: collectionId,
@@ -42,7 +38,7 @@ test("Item (NFT) attributes", async ({ api, signers }) => {
   const setAttributeTx = await api.tx.Nfts.set_attribute({
     collection: collectionId,
     maybe_item: 1, 
-    namespace: {type: "CollectionOwner", value: undefined},
+    namespace: Enum("CollectionOwner"),
     key: Binary.fromText("Experience"),
     value: Binary.fromText("300"),   
   }).signAndSubmit(alice);
@@ -52,7 +48,7 @@ test("Item (NFT) attributes", async ({ api, signers }) => {
   const setAttributeTx2 = await api.tx.Nfts.set_attribute({
     collection: collectionId,
     maybe_item: 1, 
-    namespace: {type: "ItemOwner", value: undefined},
+    namespace: Enum("ItemOwner"),
     key: Binary.fromText("Experience"),
     value: Binary.fromText("300"),   
   }).signAndSubmit(bob);
@@ -61,13 +57,13 @@ test("Item (NFT) attributes", async ({ api, signers }) => {
 
   /// getting attributes
   const attributes = await api.query.Nfts.Attribute.getEntries(collectionId, 1);
-  const attribute = await api.query.Nfts.Attribute.getValue(collectionId, 1, {type: "CollectionOwner", value: undefined}, Binary.fromText("Experience"));
+  const attribute = await api.query.Nfts.Attribute.getValue(collectionId, 1, Enum("CollectionOwner"), Binary.fromText("Experience"));
 
   const clearAttributeTx = await api.tx.Nfts.clear_attribute({
     collection: collectionId,
     maybe_item: 1,
     key: Binary.fromText("Experience"),
-    namespace: {type: "CollectionOwner", value: undefined},
+    namespace: Enum("CollectionOwner"),
   }).signAndSubmit(alice);
 
   expect(clearAttributeTx.ok).toBe(true);
@@ -76,7 +72,7 @@ test("Item (NFT) attributes", async ({ api, signers }) => {
     collection: collectionId,
     maybe_item: 1,
     key: Binary.fromText("Experience"),
-    namespace: {type: "ItemOwner", value: undefined},
+    namespace: Enum("ItemOwner"),
   }).signAndSubmit(bob);
 
   expect(clearAttributeTx2.ok).toBe(true);
