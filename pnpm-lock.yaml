@@ -14,6 +14,9 @@ importers:
       '@polkadot-labs/hdkd':
         specifier: ^0.0.19
         version: 0.0.19
+      '@polkadot-labs/hdkd-helpers':
+        specifier: ^0.0.20
+        version: 0.0.20
       polkadot-api:
         specifier: ^1.14.1
         version: 1.15.2(postcss@8.5.6)(rxjs@7.8.2)
