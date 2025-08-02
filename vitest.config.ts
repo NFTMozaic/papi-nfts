@@ -6,16 +6,14 @@ export default defineConfig({
     globals: true,
     include: ['tests/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
     testTimeout: 120_000,
-    // Run tests sequentially to avoid state conflicts
+    setupFiles: ['tests/utils/wait-for-chopsticks.ts'],
     pool: 'forks',
     poolOptions: {
       forks: {
         singleFork: true,
       },
     },
-    // Ensure tests don't run in parallel
     maxConcurrency: 1,
-    // Add isolation between tests
     isolate: true,
   },
 }) 
