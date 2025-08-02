@@ -16,4 +16,4 @@ jobs:
     
     - name: Run tests with Docker
       run: |
-        docker-compose up --build --exit-code-from tests 
+        docker compose up --build --exit-code-from tests 
