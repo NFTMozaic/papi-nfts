@@ -71,7 +71,7 @@ test("Items (NFT) can be swapped", async ({ api, signers }) => {
     maybe_price: {
       // Set undefined if no additional payment is required
       amount: ITEM_PRICE,
-      direction: { type: "Receive", value: undefined }, // Send if you want to pay, receive if you want to receive
+      direction: Enum("Receive"), // Send if you want to pay, receive if you want to receive
     },
     duration: 1000, // The deadline for the swap in blocks
   }).signAndSubmit(bob);
@@ -92,7 +92,7 @@ test("Items (NFT) can be swapped", async ({ api, signers }) => {
     receive_item: 1,
     witness_price: {
       amount: ITEM_PRICE,
-      direction: { type: "Receive", value: undefined },
+      direction: Enum("Receive"),
     },
   }).signAndSubmit(alice);
   expect(claimSwapTx.ok).toBe(true);
@@ -183,7 +183,7 @@ test("Items (NFT) swap can be cancelled", async ({ api, signers }) => {
     maybe_price: {
       // Set undefined if no additional payment is required
       amount: ITEM_PRICE,
-      direction: { type: "Receive", value: undefined }, // Send if you want to pay, receive if you want to receive
+      direction: Enum("Receive"), // Send if you want to pay, receive if you want to receive
     },
     duration: 1000, // The deadline for the swap in blocks
   }).signAndSubmit(bob);
