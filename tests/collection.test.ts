@@ -23,21 +23,6 @@ describe("NFTs pallet Collections", () => {
       },
     }).signAndSubmit(alice);
 
-    const createCollectionT2x = await api.tx.Nfts.create({
-      admin: MultiAddress.Id(bob.address),
-      config: {
-        max_supply: 1000,
-        mint_settings: {
-          default_item_settings: 0n,
-          mint_type: Enum("Issuer"),
-          price: 1n * 10n ** 10n, // 1 DOT
-          start_block: undefined,
-          end_block: undefined,
-        },
-        settings: 0n,
-      },
-    }).signAndSubmit(alice);
-
     // nfts.Created event is emitted when the collection is created
     const [createdEvent] = api.event.Nfts.Created.filter(createCollectionTx.events);
     const collectionId = createdEvent.collection;

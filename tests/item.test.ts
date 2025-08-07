@@ -35,7 +35,7 @@ describe("NFTs pallet Items", () => {
       },
     }).signAndSubmit(alice);
 
-    const createItemT2x = await api.tx.Nfts.mint({
+    const createItemTx2 = await api.tx.Nfts.mint({
       collection: collectionId,
       item: 2,
       mint_to: MultiAddress.Id(bob.address),
@@ -49,7 +49,13 @@ describe("NFTs pallet Items", () => {
     expect(mintedEvent.item).toBe(1);
     expect(mintedEvent.collection).toBe(collectionId);
 
-    // Can query all items
+    // 2. Can query minted items
+    const singleItem = await api.query.Nfts.Item.getValue(collectionId, 1);
+    const manyItems = await api.query.Nfts.Item.getValues([[collectionId, 1], [collectionId, 2]]);
+    expect(singleItem?.owner).toBe(bob.address);
+    expect(manyItems).length(2);
+
+    // 3. Can query all items
     const items = await api.query.Nfts.Account.getEntries(bob.address);
     const itemList = items.map(item => ({
       collectionId: item.keyArgs[1],
