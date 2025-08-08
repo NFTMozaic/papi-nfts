@@ -4,7 +4,7 @@ import { MultiAddress } from "@polkadot-api/descriptors";
 import { Binary, Enum } from "polkadot-api";
 
 describe("NFTs pallet Items", () => {
-  test("mint", async ({ api, signers }) => {
+  test("account can mint NFT and query all items", async ({ api, signers }) => {
     const {alice, bob} = signers;
     const mintPrice = 1n * 10n ** 10n; // 1 DOT
 
@@ -35,10 +35,41 @@ describe("NFTs pallet Items", () => {
       },
     }).signAndSubmit(alice);
 
+    const createItemTx2 = await api.tx.Nfts.mint({
+      collection: collectionId,
+      item: 2,
+      mint_to: MultiAddress.Id(bob.address),
+      witness_data: {
+        mint_price: mintPrice,
+      },
+    }).signAndSubmit(alice);
+
     const [mintedEvent] = api.event.Nfts.Issued.filter(createItemTx.events);
 
     expect(mintedEvent.item).toBe(1);
     expect(mintedEvent.collection).toBe(collectionId);
+
+    // 2. Can query minted items
+    const singleItem = await api.query.Nfts.Item.getValue(collectionId, 1);
+    const manyItems = await api.query.Nfts.Item.getValues([[collectionId, 1], [collectionId, 2]]);
+    expect(singleItem?.owner).toBe(bob.address);
+    expect(manyItems).length(2);
+
+    // 3. Can query all items
+    const items = await api.query.Nfts.Account.getEntries(bob.address);
+    const itemList = items.map(item => ({
+      collectionId: item.keyArgs[1],
+      itemId: item.keyArgs[2],
+    }));
+
+    expect(itemList).deep.contain({
+      collectionId: collectionId,
+      itemId: 1,
+    });
+    expect(itemList).deep.contain({
+      collectionId: collectionId,
+      itemId: 2,
+    });
   });
 
   test("burn", async ({ api, signers }) => {    
